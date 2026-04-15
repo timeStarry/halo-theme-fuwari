@@ -105,6 +105,16 @@
       <link rel="manifest" th:href="@{/assets/dist/.vite/manifest.json}" />
       <script type="module" th:src="@{/assets/dist/main.js?v={version}(version=${theme.spec.version})}"></script>
     </th:block>
+    <link
+      th:if="${pluginFinder.available('plugin-katex')}"
+      rel="stylesheet"
+      href="/plugins/plugin-katex/assets/static/katex.min.css"
+    />
+    <script
+      th:if="${pluginFinder.available('plugin-katex')}"
+      defer
+      src="/plugins/plugin-katex/assets/static/katex.min.js"
+    ></script>
     <th:block th:if="${head != null}">
       <th:block th:replace="${head}" />
     </th:block>

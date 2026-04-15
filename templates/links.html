@@ -4,26 +4,57 @@
   th:replace="~{modules/layout :: html(title = |#{page.links.title} - ${site.title}|, hero = null, content = ~{::content}, head = null, footer = null, sidebar = null, contentClass = null, pageType = 'archives')}"
 >
   <th:block th:fragment="content">
-    <div class="card-base px-8 py-6">
+    <div class="flex w-full flex-col gap-4">
+      <div class="card-base px-8 py-6">
+        <div class="mb-1 text-3xl font-bold text-black/85 transition dark:text-white/85" th:text="#{page.links.title}"></div>
+        <div class="text-sm leading-6 text-black/45 transition dark:text-white/45">友情链接与常用站点推荐</div>
+      </div>
+
+      <th:block th:if="${groups == null or #lists.isEmpty(groups)}">
+        <div class="card-base px-8 py-6">
+          <th:block
+            th:replace="~{modules/plugin-empty-state :: state(
+              icon='icon-[mdi--link-variant]',
+              title=#{page.empty.noLinks},
+              description=#{page.empty.noLinks.tip},
+              installUrl=${null},
+              compact=${false}
+            )}"
+          />
+        </div>
+      </th:block>
+
       <th:block th:each="group : ${groups}">
-        <div class="mt-5">
-          <h2 th:text="${group.spec.displayName}" class="my-2 text-lg font-medium md:text-xl"></h2>
-          <div class="grid grid-cols-2 gap-4 md:grid-cols-3">
-            <th:block th:each="link : ${group.links}" :key="i">
-              <a th:href="${link.spec.url}" target="_blank" th:title="${link.spec.displayName}" class="group">
-                <div
-                  class="flex aspect-[7/3] items-center justify-start space-x-3 rounded-xl p-3 shadow-md group-hover:bg-[var(--btn-plain-bg-hover)]"
-                >
-                  <div class="aspect-square overflow-hidden rounded-full">
+        <div class="card-base px-8 py-6">
+          <div class="mb-5 flex items-end justify-between gap-3">
+            <div>
+              <h2 th:text="${group.spec.displayName}" class="text-lg font-semibold text-black/85 transition dark:text-white/85 md:text-xl"></h2>
+              <div class="mt-2 inline-flex rounded-full bg-[var(--btn-regular-bg)] px-3 py-1 text-xs font-medium text-[var(--btn-content)]" th:text="${group.links.size()}"></div>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <th:block th:each="link : ${group.links}">
+              <a
+                th:href="${link.spec.url}"
+                target="_blank"
+                rel="noopener"
+                th:title="${link.spec.displayName}"
+                class="group block rounded-[var(--radius-large)] active:scale-[0.99]"
+              >
+                <div class="flex h-full gap-4 rounded-[var(--radius-large)] border border-dashed border-[var(--line-divider)] bg-black/[0.015] p-4 transition group-hover:bg-[var(--btn-card-bg-hover)] dark:bg-white/[0.02]">
+                  <div class="h-14 w-14 shrink-0 overflow-hidden rounded-2xl bg-[var(--btn-regular-bg)]">
                     <img
-                      class="size-16 transform bg-cover object-cover transition-all duration-500 group-hover:size-0"
+                      class="h-full w-full object-cover transition duration-300 group-hover:scale-105"
                       th:src="${link.spec.logo}"
                       th:alt="${link.spec.displayName}"
                     />
                   </div>
-                  <div class="group-hover:text-[var(--primary)]">
-                    <div th:text="${link.spec.displayName}" class="line-clamp-1 font-medium"></div>
-                    <div th:text="${link.spec.description}" class="line-clamp-2 text-[var(--)]"></div>
+                  <div class="min-w-0 flex-1">
+                    <div class="mb-1 flex items-center gap-2">
+                      <div th:text="${link.spec.displayName}" class="line-clamp-1 font-semibold text-black/80 transition group-hover:text-[var(--primary)] dark:text-white/80"></div>
+                      <span class="icon-[tabler--external-link] shrink-0 text-base text-black/25 transition group-hover:text-[var(--primary)] dark:text-white/25"></span>
+                    </div>
+                    <div th:text="${link.spec.description}" class="line-clamp-2 text-sm leading-6 text-black/45 transition dark:text-white/45"></div>
                   </div>
                 </div>
               </a>

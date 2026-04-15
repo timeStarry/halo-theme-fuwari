@@ -1,0 +1,33 @@
+<th:block th:fragment="state(icon, title, description, installUrl, compact)">
+  <div
+    class="flex flex-col items-center justify-center rounded-[var(--radius-large)] border border-dashed border-[var(--line-divider)] bg-black/[0.015] px-8 py-10 text-center transition dark:bg-white/[0.02]"
+    th:classappend="${compact} ? 'px-6 py-6' : ''"
+  >
+    <div
+      class="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--btn-regular-bg)] text-[var(--primary)] transition"
+      th:classappend="${compact} ? 'mb-3 h-12 w-12 rounded-xl' : ''"
+    >
+      <span th:class="${icon}" th:classappend="${compact} ? 'text-[1.5rem]' : 'text-[1.75rem]'"></span>
+    </div>
+    <div
+      class="mb-2 text-lg font-bold text-black/80 transition dark:text-white/80"
+      th:classappend="${compact} ? 'text-base' : ''"
+      th:text="${title}"
+    ></div>
+    <p
+      class="max-w-[34rem] text-sm leading-6 text-black/45 transition dark:text-white/45"
+      th:classappend="${compact} ? 'max-w-none text-left text-sm leading-5' : ''"
+      th:text="${description}"
+    ></p>
+    <a
+      th:if="${not #strings.isEmpty(installUrl)}"
+      th:href="${installUrl}"
+      target="_blank"
+      rel="noopener"
+      class="btn-regular mt-4 inline-flex h-10 items-center gap-2 rounded-xl px-4 font-bold active:scale-95"
+    >
+      <span class="icon-[material-symbols--download-rounded] text-[1.15rem]"></span>
+      <span th:text="#{page.plugin.install}"></span>
+    </a>
+  </div>
+</th:block>

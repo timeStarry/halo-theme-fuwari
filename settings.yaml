@@ -326,6 +326,44 @@ spec:
           label: 启用目录
           value: false
           help: "启用目录"
+    - group: moments
+      label: 瞬间
+      formSchema:
+        - $formkit: text
+          name: page_title
+          label: 页面标题
+          value: ""
+          help: "留空则使用内置标题"
+        - $formkit: text
+          name: page_subtitle
+          label: 页面副标题
+          value: ""
+
+    - group: photos
+      label: 图库
+      formSchema:
+        - $formkit: text
+          name: page_title
+          label: 页面标题
+          value: ""
+          help: "留空则使用内置标题"
+        - $formkit: text
+          name: page_subtitle
+          label: 页面副标题
+          value: ""
+
+    - group: comments
+      label: 留言板
+      formSchema:
+        - $formkit: text
+          name: page_title
+          label: 页面标题
+          value: ""
+          help: "留空则使用页面标题"
+        - $formkit: text
+          name: page_subtitle
+          label: 页面副标题
+          value: ""
     - group: beian
       label: 备案设置
       formSchema:

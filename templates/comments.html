@@ -1,0 +1,46 @@
+<!doctype html>
+<html
+  xmlns:th="https://www.thymeleaf.org"
+  th:replace="~{modules/layout :: html(title = ${singlePage.spec.title +' - '+site.title}, hero = null, content = ~{::content}, head = null, footer = null, sidebar = null, contentClass = null, pageType = 'comments')}"
+>
+  <th:block th:fragment="content">
+    <div class="flex w-full flex-col gap-4">
+      <div class="card-base overflow-hidden px-9 py-8">
+        <div
+          th:if="${not #strings.isEmpty(theme.config.comments.page_title)}"
+          class="mb-2 text-3xl font-bold text-black/85 transition dark:text-white/85"
+          th:text="${theme.config.comments.page_title}"
+        ></div>
+        <div
+          th:unless="${not #strings.isEmpty(theme.config.comments.page_title)}"
+          class="mb-2 text-3xl font-bold text-black/85 transition dark:text-white/85"
+          th:text="${singlePage.spec.title}"
+        ></div>
+        <div
+          th:if="${not #strings.isEmpty(theme.config.comments.page_subtitle)}"
+          class="text-sm leading-6 text-black/45 transition dark:text-white/45"
+          th:text="${theme.config.comments.page_subtitle}"
+        ></div>
+      </div>
+
+      <div class="relative flex min-h-32 w-full overflow-hidden rounded-[var(--radius-large)]">
+        <div class="card-base relative z-10 w-full px-9 py-6">
+          <div
+            class="custom-md prose prose-base mt-2 !max-w-none dark:prose-invert"
+            th:utext="${singlePage.content.content}"
+          ></div>
+        </div>
+      </div>
+
+      <th:block
+        th:replace="~{modules/comment :: comment(
+          group = 'content.halo.run',
+          kind = 'SinglePage',
+          name = ${singlePage.metadata.name},
+          allowComment = ${singlePage.spec.allowComment},
+          title = #{common.comment}
+        )}"
+      />
+    </div>
+  </th:block>
+</html>

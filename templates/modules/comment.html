@@ -1,0 +1,28 @@
+<th:block th:fragment="comment(group, kind, name, allowComment, title)" th:if="${allowComment}">
+  <div class="card-base relative z-10 w-full px-6 pb-4 pt-6 md:px-9" id="comment">
+    <h2
+      th:if="${not #strings.isEmpty(title)}"
+      class="mb-2 text-base font-medium text-gray-900 dark:text-slate-50"
+      th:text="${title}"
+    ></h2>
+    <h2
+      th:unless="${not #strings.isEmpty(title)}"
+      class="mb-2 text-base font-medium text-gray-900 dark:text-slate-50"
+      th:text="#{common.comment}"
+    ></h2>
+    <th:block th:if="${pluginFinder.available('PluginCommentWidget')}">
+      <halo:comment th:attr="group=${group},kind=${kind},name=${name}" />
+    </th:block>
+    <th:block th:unless="${pluginFinder.available('PluginCommentWidget')}">
+      <th:block
+        th:replace="~{modules/plugin-empty-state :: state(
+          icon='icon-[material-symbols--chat-bubble-outline-rounded]',
+          title=#{page.empty.commentPlugin},
+          description=#{page.empty.commentPlugin.tip},
+          installUrl='https://www.halo.run/store/apps/app-YXyaD',
+          compact=${true}
+        )}"
+      />
+    </th:block>
+  </div>
+</th:block>

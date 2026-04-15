@@ -1,0 +1,92 @@
+<!doctype html>
+<html
+  xmlns:th="https://www.thymeleaf.org"
+  th:replace="~{modules/layout :: html(title = ${singlePage.spec.title +' - '+site.title}, hero = null, content = ~{::content}, head = null, footer = null, sidebar = null, contentClass = null, pageType = 'album')}"
+>
+  <th:block th:fragment="content">
+    <div class="flex w-full flex-col gap-4">
+      <div class="card-base overflow-hidden px-9 py-8">
+        <div class="mb-2 text-3xl font-bold text-black/85 transition dark:text-white/85" th:text="${singlePage.spec.title}"></div>
+        <div
+          th:if="${not #strings.isEmpty(singlePage.status.excerpt)}"
+          class="text-sm leading-6 text-black/45 transition dark:text-white/45"
+          th:text="${singlePage.status.excerpt}"
+        ></div>
+      </div>
+
+      <div class="card-base px-8 py-6" th:if="${pluginFinder.available('PluginPhotos')}">
+        <th:block th:if="${not #lists.isEmpty(photoFinder.groupBy())}">
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <th:block th:each="group : ${photoFinder.groupBy()}">
+              <a
+                th:href="@{|/photos?group=${group.metadata.name}|}"
+                class="group relative block overflow-hidden rounded-[var(--radius-large)] active:scale-[0.99]"
+              >
+                <div class="absolute inset-0 z-10 bg-gradient-to-t from-black/65 via-black/10 to-transparent"></div>
+                <img
+                  th:if="${not #strings.isEmpty(#annotations.get(group, 'cover'))}"
+                  th:src="${#annotations.get(group, 'cover')}"
+                  th:alt="${group.spec.displayName}"
+                  class="h-72 w-full object-cover transition duration-500 group-hover:scale-105"
+                />
+                <div
+                  th:unless="${not #strings.isEmpty(#annotations.get(group, 'cover'))}"
+                  class="h-72 w-full bg-[var(--btn-regular-bg)]"
+                ></div>
+                <div class="absolute inset-x-0 bottom-0 z-20 p-5 text-white">
+                  <div class="mb-2 inline-flex rounded-full bg-white/15 px-3 py-1 text-xs font-medium backdrop-blur">
+                    Album
+                  </div>
+                  <div class="mb-1 text-xl font-bold" th:text="${group.spec.displayName}"></div>
+                  <div
+                    th:if="${not #strings.isEmpty(#annotations.get(group, 'description'))}"
+                    class="line-clamp-2 text-sm text-white/75"
+                    th:text="${#annotations.get(group, 'description')}"
+                  ></div>
+                  <div
+                    th:unless="${not #strings.isEmpty(#annotations.get(group, 'description'))}"
+                    class="line-clamp-2 text-sm text-white/75"
+                    th:text="#{page.photos.group.tip}"
+                  ></div>
+                </div>
+              </a>
+            </th:block>
+          </div>
+        </th:block>
+        <th:block th:if="${#lists.isEmpty(photoFinder.groupBy())}">
+          <th:block
+            th:replace="~{modules/plugin-empty-state :: state(
+              icon='icon-[material-symbols--imagesmode-outline-rounded]',
+              title=#{page.empty.noPhotos},
+              description=#{page.empty.noPhotos.tip},
+              installUrl=${null},
+              compact=${false}
+            )}"
+          />
+        </th:block>
+      </div>
+
+      <div class="card-base px-8 py-6" th:unless="${pluginFinder.available('PluginPhotos')}">
+        <th:block
+          th:replace="~{modules/plugin-empty-state :: state(
+            icon='icon-[material-symbols--imagesmode-outline-rounded]',
+            title=#{page.empty.photosPlugin},
+            description=#{page.empty.photosPlugin.tip},
+            installUrl='https://www.halo.run/store/apps/app-BmQJW',
+            compact=${false}
+          )}"
+        />
+      </div>
+
+      <th:block
+        th:replace="~{modules/comment :: comment(
+          group = 'content.halo.run',
+          kind = 'SinglePage',
+          name = ${singlePage.metadata.name},
+          allowComment = ${singlePage.spec.allowComment},
+          title = #{common.comment}
+        )}"
+      />
+    </div>
+  </th:block>
+</html>

@@ -28,57 +28,6 @@ spec:
               value: false
               help: "隐藏访问者的主题彩色选择器"
         - $formkit: group
-          name: banner
-          label: Banner
-          value:
-            enable: true
-            src: "/themes/theme-fuwari/assets/images/demo-banner.png"
-            position: "center"
-            credit:
-              enable: false
-              text: "© 2022 Fuwari"
-              url: ""
-          children:
-            - $formkit: checkbox
-              name: enable
-              label: 启用
-              value: true
-              help: "启用横幅"
-            - $formkit: attachment
-              name: src
-              label: 图片
-              value: "/themes/theme-fuwari/assets/images/demo-banner.png"
-              help: "显示的图像"
-            - $formkit: select
-              name: position
-              label: 位置
-              value: "center"
-              options:
-                - value: center
-                  label: 居中
-                - value: top
-                  label: 顶部
-                - value: bottom
-                  label: 底部
-            - $formkit: group
-              name: credit
-              label: 版权信息
-              children:
-                - $formkit: checkbox
-                  name: enable
-                  label: 启用
-                  value: false
-                  help: "启用版权信息"
-                - $formkit: text
-                  name: text
-                  label: 文字
-                  value: "© 2022 Fuwari"
-                  help: "显示的文字"
-                - $formkit: url
-                  name: url
-                  label: 链接
-                  value:
-        - $formkit: group
           name: toc
           label: 目录
           value:
@@ -101,6 +50,139 @@ spec:
           label: 菜单
           value: ""
           help: "选择菜单(仅支持一级菜单)"
+    - group: home
+      label: 首页设置
+      formSchema:
+        - $formkit: group
+          name: banner
+          label: 首页 Banner
+          value:
+            enable: true
+            src: "/themes/theme-fuwari/assets/images/demo-banner.png"
+            position: "center"
+            credit:
+              enable: false
+              text: "© 2022 Fuwari"
+              url: ""
+          children:
+            - $formkit: checkbox
+              name: enable
+              label: 启用 Banner
+              value: true
+              help: "控制首页 Banner 与引导区是否显示"
+            - $formkit: attachment
+              name: src
+              label: Banner 图片
+              value: "/themes/theme-fuwari/assets/images/demo-banner.png"
+              help: "建议使用横向大图以获得更好的展示效果"
+            - $formkit: select
+              name: position
+              label: 图片位置
+              value: "center"
+              options:
+                - value: center
+                  label: 居中
+                - value: top
+                  label: 顶部
+                - value: bottom
+                  label: 底部
+            - $formkit: group
+              name: credit
+              label: Banner 版权信息
+              children:
+                - $formkit: checkbox
+                  name: enable
+                  label: 启用
+                  value: false
+                  help: "在 Banner 右上角显示来源说明"
+                - $formkit: text
+                  name: text
+                  label: 文字
+                  value: "© 2022 Fuwari"
+                  help: "显示的版权说明文字"
+                - $formkit: url
+                  name: url
+                  label: 链接
+                  value:
+        - $formkit: number
+          name: posts_per_page
+          label: 首页单页显示文章数量
+          value: 8
+          min: 1
+          max: 30
+          step: 1
+          help: "控制首页文章列表与分页中每页展示的篇数"
+        - $formkit: text
+          name: hero_title
+          label: Banner 主标题
+          value: ""
+          help: "留空则使用站点标题"
+        - $formkit: text
+          name: hero_description
+          label: Banner 简介
+          value: ""
+          help: "留空则使用侧边栏个人简介"
+        - $formkit: group
+          name: typewriter
+          label: 打字机
+          value:
+            enable: true
+            prefix: "此刻"
+            loop: true
+            type_speed: 95
+            back_speed: 55
+            pause_time: 2200
+            lines:
+              - text: "记录生活，也记录那些轻微发光的瞬间。"
+              - text: "把热爱写成文章，把想法慢慢打磨。"
+          children:
+            - $formkit: checkbox
+              name: enable
+              label: 启用打字机
+              value: true
+              help: "在首页 Banner 引导区显示打字机文案"
+            - $formkit: text
+              name: prefix
+              label: 前缀文案
+              value: "此刻"
+              help: "显示在打字机前的小标题，留空则不显示"
+            - $formkit: repeater
+              name: lines
+              label: 打字机文案
+              value:
+                - text: "记录生活，也记录那些轻微发光的瞬间。"
+                - text: "把热爱写成文章，把想法慢慢打磨。"
+              children:
+                - $formkit: text
+                  name: text
+                  label: 文案
+                  validation: "required"
+                  help: "按顺序轮播显示"
+            - $formkit: checkbox
+              name: loop
+              label: 循环播放
+              value: true
+            - $formkit: number
+              name: type_speed
+              label: 打字速度(ms)
+              value: 95
+              min: 20
+              max: 300
+              step: 5
+            - $formkit: number
+              name: back_speed
+              label: 删除速度(ms)
+              value: 55
+              min: 10
+              max: 200
+              step: 5
+            - $formkit: number
+              name: pause_time
+              label: 停顿时间(ms)
+              value: 2200
+              min: 500
+              max: 8000
+              step: 100
     - group: style
       label: 样式
       formSchema:

@@ -48,11 +48,16 @@
           />
         </div>
 
-        <div class="flex flex-col gap-4" th:unless="${#lists.isEmpty(moments.items)}">
+        <div
+          class="flex flex-col gap-4"
+          th:if="${param['preview-theme'] != null and not #lists.isEmpty(moments.items)}"
+        >
           <th:block th:each="moment : ${moments.items}" th:with="content=${moment.spec.content}">
             <div class="card-base overflow-hidden px-8 py-6">
               <div class="mb-4 flex items-center gap-3 text-sm text-black/35 transition dark:text-white/35">
-                <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-[var(--btn-regular-bg)] text-[var(--primary)]">
+                <div
+                  class="flex h-10 w-10 items-center justify-center rounded-2xl bg-[var(--btn-regular-bg)] text-[var(--primary)]"
+                >
                   <span class="icon-[material-symbols--ink-pen-outline-rounded] text-[1.2rem]"></span>
                 </div>
                 <div class="flex items-center gap-2">
@@ -73,7 +78,10 @@
               ></div>
 
               <th:block th:if="${not #lists.isEmpty(content.medium)}">
-                <div class="moment-gallery mt-5 grid grid-cols-2 gap-3 md:grid-cols-3" th:if="${#strings.contains(content.medium,'PHOTO')}">
+                <div
+                  class="moment-gallery mt-5 grid grid-cols-2 gap-3 md:grid-cols-3"
+                  th:if="${#strings.contains(content.medium,'PHOTO')}"
+                >
                   <th:block th:each="momentItem : ${content.medium}">
                     <img
                       th:if="${momentItem.type.name == 'PHOTO'}"
@@ -93,6 +101,12 @@
                 </div>
               </th:block>
             </div>
+          </th:block>
+        </div>
+
+        <div class="flex flex-col gap-4" th:unless="${param['preview-theme'] != null or #lists.isEmpty(moments.items)}">
+          <th:block th:each="moment : ${moments.items}">
+            <th:block th:replace="~{modules/moment-entry :: entry(moment = ${moment}, detailView = ${false})}" />
           </th:block>
         </div>
       </th:block>

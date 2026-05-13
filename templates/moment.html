@@ -1,0 +1,32 @@
+<!doctype html>
+<html
+  xmlns:th="https://www.thymeleaf.org"
+  th:replace="~{modules/layout :: html(title = |#{page.moments.title} - ${site.title}|, hero = null, content = ~{::content}, head = null, footer = null, sidebar = null, contentClass = null, pageType = 'moment')}"
+>
+  <th:block th:fragment="content">
+    <div class="flex w-full flex-col gap-4">
+      <div class="card-base overflow-hidden px-9 py-8">
+        <div
+          class="mb-2 text-3xl font-bold text-black/85 transition dark:text-white/85"
+          th:text="#{page.moments.title}"
+        ></div>
+        <div
+          class="text-sm leading-6 text-black/45 transition dark:text-white/45"
+          th:text="#{page.moments.detailSubtitle}"
+        ></div>
+      </div>
+
+      <th:block th:replace="~{modules/moment-entry :: entry(moment = ${moment}, detailView = ${true})}" />
+
+      <th:block
+        th:replace="~{modules/comment :: comment(
+          group = 'moment.halo.run',
+          kind = 'Moment',
+          name = ${moment.metadata.name},
+          allowComment = ${true},
+          title = #{common.comment}
+        )}"
+      />
+    </div>
+  </th:block>
+</html>

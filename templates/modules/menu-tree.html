@@ -1,0 +1,99 @@
+<th:block th:fragment="desktop-items(items, level)">
+  <th:block th:each="menuItem : ${items}">
+    <th:block th:if="${level > 0 or menuItem.parentName == null}">
+      <th:block th:replace="~{modules/menu-tree :: desktop-item(menuItem = ${menuItem}, level = ${level})}" />
+    </th:block>
+  </th:block>
+</th:block>
+
+<th:block
+  th:fragment="desktop-item(menuItem, level)"
+  th:with="hasChildren=${menuItem.children != null and not #lists.isEmpty(menuItem.children)}"
+>
+  <div class="menu-desktop-item" th:classappend="${level > 0} ? 'menu-desktop-item-nested' : ''">
+    <button
+      th:if="${hasChildren}"
+      type="button"
+      class="menu-desktop-trigger btn-plain scale-animation"
+      th:classappend="${level > 0} ? 'menu-desktop-trigger-nested' : ''"
+    >
+      <span class="truncate">[[${menuItem.status.displayName}]]</span>
+      <span
+        class="menu-desktop-arrow"
+        th:classappend="${level > 0} ? 'icon-[material-symbols--chevron-right-rounded]' : 'icon-[material-symbols--keyboard-arrow-down-rounded]'"
+      ></span>
+    </button>
+
+    <a
+      th:unless="${hasChildren}"
+      th:href="@{${menuItem.status.href}}"
+      th:target="${menuItem.spec.target?.value}"
+      class="menu-desktop-link btn-plain scale-animation"
+      th:classappend="${level > 0} ? 'menu-desktop-link-nested' : ''"
+    >
+      <span class="truncate">[[${menuItem.status.displayName}]]</span>
+      <span
+        th:if="${menuItem.spec.target?.value == '_blank'}"
+        class="icon-[tabler--external-link] shrink-0 text-[1rem] text-black/[0.28] transition dark:text-white/[0.28]"
+      ></span>
+    </a>
+
+    <div
+      th:if="${hasChildren}"
+      class="menu-desktop-children"
+      th:classappend="${level > 0} ? 'menu-desktop-children-nested' : 'menu-desktop-children-root'"
+    >
+      <div class="menu-desktop-panel card-base float-panel">
+        <th:block
+          th:replace="~{modules/menu-tree :: desktop-items(items = ${menuItem.children}, level = ${level + 1})}"
+        />
+      </div>
+    </div>
+  </div>
+</th:block>
+
+<th:block th:fragment="mobile-items(items, level)">
+  <div class="menu-mobile-list" th:classappend="${level > 0} ? 'menu-mobile-list-nested' : ''">
+    <th:block th:each="menuItem : ${items}">
+      <th:block th:if="${level > 0 or menuItem.parentName == null}">
+        <th:block th:replace="~{modules/menu-tree :: mobile-item(menuItem = ${menuItem}, level = ${level})}" />
+      </th:block>
+    </th:block>
+  </div>
+</th:block>
+
+<th:block
+  th:fragment="mobile-item(menuItem, level)"
+  th:with="hasChildren=${menuItem.children != null and not #lists.isEmpty(menuItem.children)}"
+>
+  <details
+    th:if="${hasChildren}"
+    class="menu-mobile-group"
+    th:classappend="${level > 0} ? 'menu-mobile-group-nested' : ''"
+  >
+    <summary class="menu-mobile-summary">
+      <span class="truncate">[[${menuItem.status.displayName}]]</span>
+      <span class="menu-mobile-arrow icon-[material-symbols--keyboard-arrow-down-rounded]"></span>
+    </summary>
+    <div class="menu-mobile-content">
+      <th:block th:replace="~{modules/menu-tree :: mobile-items(items = ${menuItem.children}, level = ${level + 1})}" />
+    </div>
+  </details>
+
+  <a
+    th:unless="${hasChildren}"
+    th:href="@{${menuItem.status.href}}"
+    th:target="${menuItem.spec.target?.value}"
+    class="menu-mobile-link"
+  >
+    <span class="truncate">[[${menuItem.status.displayName}]]</span>
+    <span
+      th:if="${menuItem.spec.target?.value == '_blank'}"
+      class="icon-[tabler--external-link] shrink-0 text-[1rem] text-black/[0.28] transition dark:text-white/[0.28]"
+    ></span>
+    <span
+      th:unless="${menuItem.spec.target?.value == '_blank'}"
+      class="icon-[material-symbols--chevron-right-rounded] shrink-0 text-[1rem] text-black/[0.28] transition dark:text-white/[0.28]"
+    ></span>
+  </a>
+</th:block>

@@ -34,6 +34,7 @@ import { loadButtonScript } from "./widgets/navbar";
 import { setClickOutsideToClose } from "./utils/base-utils";
 import dropdown from "./alpine-data/dropdown";
 import colorSchemeSwitcher from "./alpine-data/color-scheme-switcher";
+import momentInteractions from "./alpine-data/moment-interactions";
 import upvote from "./alpine-data/upvote";
 import share from "./alpine-data/share";
 import uiPermission from "./alpine-data/ui-permission";
@@ -56,21 +57,25 @@ window.fuwari = {
   setColorScheme,
   getCurrentColorScheme,
 };
-const swup = new Swup({
-  animationSelector: '[class*="transition-swup-"]',
-  containers: ["main"],
-  plugins: [
-    new SwupHeadPlugin({ persistAssets: true }),
-    new SwupPreloadPlugin(),
-    new SwupScrollPlugin(),
-    new SwupScriptsPlugin({
-      head: false,
-      body: true,
-    }),
-  ],
-});
+const isThemePreview = new URLSearchParams(window.location.search).has("preview-theme");
+const swup = isThemePreview
+  ? null
+  : new Swup({
+      animationSelector: '[class*="transition-swup-"]',
+      containers: ["main"],
+      plugins: [
+        new SwupHeadPlugin({ persistAssets: true }),
+        new SwupPreloadPlugin(),
+        new SwupScrollPlugin(),
+        new SwupScriptsPlugin({
+          head: false,
+          body: true,
+        }),
+      ],
+    });
 Alpine.data("dropdown", dropdown);
 Alpine.data("colorSchemeSwitcher", colorSchemeSwitcher);
+Alpine.data("momentInteractions", momentInteractions);
 Alpine.data("upvote", upvote);
 Alpine.data("share", share);
 Alpine.data("uiPermission", uiPermission);
@@ -92,6 +97,10 @@ function getThemeConfig(): ThemeConfig | undefined {
 // 使用
 const themeConfig = getThemeConfig();
 console.log("主题配置：", themeConfig);
+
+function getBannerConfig(config?: ThemeConfig) {
+  return config?.home?.banner ?? config?.base?.banner;
+}
 
 function mountWidgets() {
   console.log("Mounting widgets...");
@@ -269,7 +278,8 @@ function initCustomScrollbar() {
   });
 }
 function showBanner() {
-  if (!themeConfig?.base.banner.enable) return;
+  const bannerConfig = getBannerConfig(themeConfig);
+  if (!bannerConfig?.enable) return;
 
   const banner = document.getElementById("banner");
   if (!banner) {
@@ -279,6 +289,133 @@ function showBanner() {
 
   banner.classList.remove("opacity-0", "scale-105");
 }
+
+type TypewriterController = {
+  destroy: () => void;
+};
+
+let homeTypewriterController: TypewriterController | undefined;
+
+function destroyHomeTypewriter() {
+  homeTypewriterController?.destroy();
+  homeTypewriterController = undefined;
+}
+
+function createTypewriter(
+  element: HTMLElement,
+  strings: string[],
+  options: {
+    typeSpeed: number;
+    backSpeed: number;
+    pauseTime: number;
+    loop: boolean;
+  },
+): TypewriterController {
+  if (!strings.length) {
+    return { destroy: () => undefined };
+  }
+
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    element.textContent = strings[0];
+    return { destroy: () => undefined };
+  }
+
+  let destroyed = false;
+  let timer = 0;
+  let lineIndex = 0;
+  let charIndex = 0;
+  let deleting = false;
+
+  const schedule = (callback: () => void, delay: number) => {
+    timer = window.setTimeout(callback, delay);
+  };
+
+  const getDelay = (base: number, variance: number) => {
+    const delta = Math.round((Math.random() - 0.5) * variance);
+    return Math.max(16, base + delta);
+  };
+
+  const tick = () => {
+    if (destroyed) return;
+
+    const current = strings[lineIndex] ?? "";
+
+    if (!deleting) {
+      charIndex += 1;
+      element.textContent = current.slice(0, charIndex);
+
+      if (charIndex >= current.length) {
+        if (!options.loop && lineIndex >= strings.length - 1) {
+          return;
+        }
+        deleting = true;
+        schedule(tick, options.pauseTime);
+        return;
+      }
+
+      schedule(tick, getDelay(options.typeSpeed, 28));
+      return;
+    }
+
+    charIndex -= 1;
+    element.textContent = current.slice(0, Math.max(charIndex, 0));
+
+    if (charIndex <= 0) {
+      deleting = false;
+      lineIndex = (lineIndex + 1) % strings.length;
+      schedule(tick, Math.min(320, Math.max(80, Math.round(options.pauseTime / 5))));
+      return;
+    }
+
+    schedule(tick, getDelay(options.backSpeed, 18));
+  };
+
+  schedule(tick, Math.min(900, Math.max(120, Math.round(options.pauseTime / 4))));
+
+  return {
+    destroy: () => {
+      destroyed = true;
+      window.clearTimeout(timer);
+    },
+  };
+}
+
+function initHomeTypewriter() {
+  destroyHomeTypewriter();
+
+  const element = document.getElementById("home-typewriter");
+  if (!(element instanceof HTMLElement)) return;
+
+  const strings = Array.from(element.querySelectorAll<HTMLElement>(".home-typewriter-source"))
+    .map((item) => item.textContent?.trim() || "")
+    .filter(Boolean);
+
+  const fallback = element.dataset.fallback?.trim();
+  if (!strings.length && fallback) {
+    strings.push(fallback);
+  }
+
+  if (!strings.length) return;
+
+  const typeSpeed = Number(element.dataset.typeSpeed || 95);
+  const backSpeed = Number(element.dataset.backSpeed || 55);
+  const pauseTime = Number(element.dataset.pauseTime || 2200);
+  const loop = element.dataset.loop !== "false";
+
+  homeTypewriterController = createTypewriter(element, strings, {
+    typeSpeed,
+    backSpeed,
+    pauseTime,
+    loop,
+  });
+}
+
+function refreshBannerDecorations() {
+  bannerEnabled = !!document.getElementById("banner-wrapper");
+  showBanner();
+  initHomeTypewriter();
+}
+
 function init() {
   // disableAnimation()()		// TODO
   initColorScheme(
@@ -288,12 +425,14 @@ function init() {
   loadHue();
   initCustomScrollbar();
   initNoteBlocks(); // 新增：初始加载时初始化笔记块
-  showBanner();
+  refreshBannerDecorations();
 }
 /* Load settings when entering the site */
 
 // 初始化 Swup
 const setup = () => {
+  if (!swup) return;
+
   // TODO: temp solution to change the height of the banner
   /*
     window.swup.hooks.on('animation:out:start', () => {
@@ -337,6 +476,7 @@ const setup = () => {
 
     initCustomScrollbar();
     initNoteBlocks(); // 新增：内容替换后重新初始化笔记块（SPA 路由关键）
+    refreshBannerDecorations();
   });
   swup.hooks.on("visit:start", () => {
     // increase the page height during page transition to prevent the scrolling animation from jumping
@@ -421,6 +561,9 @@ const setupLightbox = () => {
   if (!lightbox) {
     createPhotoSwipe();
   }
+  if (!swup) {
+    return;
+  }
   swup.hooks.on("page:view", () => {
     createPhotoSwipe();
   });
@@ -499,14 +642,16 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-swup.hooks.on("visit:start", () => {
-  console.log(window.location.href);
-});
-swup.hooks.on("content:replace", () => {
-  console.log("Content replaced");
-  // mountWidgets();
-  initNoteBlocks(); // 新增：内容替换后额外调用（确保 Swup 钩子中已调用，但这里作为备份）
-});
+if (swup) {
+  swup.hooks.on("visit:start", () => {
+    console.log(window.location.href);
+  });
+  swup.hooks.on("content:replace", () => {
+    console.log("Content replaced");
+    // mountWidgets();
+    initNoteBlocks(); // 新增：内容替换后额外调用（确保 Swup 钩子中已调用，但这里作为备份）
+  });
+}
 
 // 页面初始加载
 document.addEventListener("DOMContentLoaded", () => {

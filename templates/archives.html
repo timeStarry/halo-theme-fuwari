@@ -67,5 +67,33 @@
         </div>
       </th:block>
     </div>
+    <div
+      th:if="${archives.hasPrevious() || archives.hasNext()}"
+      class="onload-animation mx-auto mt-5 flex flex-row items-center justify-center gap-3"
+      th:style="|animation-delay: calc(var(--content-delay) + ${archives.items.size()*50}ms)|"
+    >
+      <a
+        th:href="@{${archives.prevUrl}}"
+        th:aria-label="${archives.hasPrevious() ? 'Previous Page' : null}"
+        class="btn-card h-11 w-11 overflow-hidden rounded-lg"
+        th:classappend="${archives.hasPrevious() ? 'text-[var(--primary)]' : 'disabled'}"
+      >
+        <span class="icon-[material-symbols--chevron-left-rounded] text-[1.75rem]"></span>
+      </a>
+
+      <div
+        class="flex min-w-24 items-center justify-center rounded-lg bg-[var(--card-bg)] px-4 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-300"
+        th:text="|${archives.page} / ${archives.totalPages}|"
+      ></div>
+
+      <a
+        th:href="@{${archives.nextUrl}}"
+        th:aria-label="${archives.hasNext() ? 'Next Page' : null}"
+        class="btn-card h-11 w-11 overflow-hidden rounded-lg"
+        th:classappend="${archives.hasNext() ? 'text-[var(--primary)]' : 'disabled'}"
+      >
+        <span class="icon-[material-symbols--chevron-right-rounded] text-[1.75rem]"></span>
+      </a>
+    </div>
   </th:block>
 </html>

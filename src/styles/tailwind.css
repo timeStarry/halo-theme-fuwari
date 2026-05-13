@@ -84,6 +84,12 @@
     @apply transition flex items-center justify-center bg-[var(--btn-regular-bg)] hover:bg-[var(--btn-regular-bg-hover)] active:bg-[var(--btn-regular-bg-active)]
     text-[var(--btn-content)] dark:text-white/75
   }
+  .moment-action-btn {
+    @apply inline-flex items-center gap-2 rounded-full border border-dashed border-[var(--line-divider)] bg-black/[0.03] px-3.5 py-2 text-sm font-semibold text-black/55 transition hover:bg-[var(--btn-card-bg-hover)] hover:text-[var(--primary)] active:scale-[0.98] dark:bg-white/[0.04] dark:text-white/55;
+  }
+  .moment-action-btn-active {
+    @apply border-transparent bg-[var(--btn-regular-bg-hover)] text-[var(--primary)];
+  }
 
   .link-underline {
     @apply transition underline decoration-2 decoration-dashed decoration-[var(--link-underline)]

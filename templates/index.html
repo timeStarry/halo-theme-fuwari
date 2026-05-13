@@ -4,15 +4,35 @@
   th:replace="~{modules/layout :: html(title = ${site.title}, hero = null, content = ~{::content}, head = null, footer = null, sidebar = null, contentClass = null, pageType = 'home')}"
 >
   <th:block th:fragment="content">
-    <div
-      class="mb-4 flex flex-col rounded-[var(--radius-large)] bg-[var(--card-bg)] py-1 transition md:gap-4 md:bg-transparent md:py-0"
-    >
-      <th:block th:each="post,postStat : ${posts.items}">
-        <th:block th:replace="~{modules/post-card :: card(post = ${post}, index = ${postStat.index})}" />
-      </th:block>
-    </div>
+    <th:block th:if="${param['preview-theme'] != null}">
+      <div
+        id="home-post-list"
+        class="mb-4 flex flex-col rounded-[var(--radius-large)] bg-[var(--card-bg)] py-1 transition md:gap-4 md:bg-transparent md:py-0"
+      >
+        <th:block th:each="post,postStat : ${posts.items}">
+          <th:block th:replace="~{modules/post-card :: card(post = ${post}, index = ${postStat.index})}" />
+        </th:block>
+      </div>
+      <th:block
+        th:replace="~{modules/pagination :: pagination(context = '/page/', prevUrl = ${posts.prevUrl}, nextUrl = ${posts.nextUrl}, totalPages = ${posts.totalPages}, page = ${posts.page}, hasPrevious = ${posts.hasPrevious()}, hasNext = ${posts.hasNext()}, postListCount = ${posts.items.size()})}"
+      />
+    </th:block>
+
     <th:block
-      th:replace="~{modules/pagination :: pagination(context = '/page/', prevUrl = ${posts.prevUrl}, nextUrl = ${posts.nextUrl}, totalPages = ${posts.totalPages}, page = ${posts.page}, hasPrevious = ${posts.hasPrevious()}, hasNext = ${posts.hasNext()}, postListCount = ${posts.items.size()})}"
-    />
+      th:unless="${param['preview-theme'] != null}"
+      th:with="homeConfig=${theme.config['home']}, homePageSize=${homeConfig != null and homeConfig['posts_per_page'] != null ? homeConfig['posts_per_page'] : 8}, homePosts=${postFinder.list(posts.page, homePageSize)}"
+    >
+      <div
+        id="home-post-list"
+        class="mb-4 flex flex-col rounded-[var(--radius-large)] bg-[var(--card-bg)] py-1 transition md:gap-4 md:bg-transparent md:py-0"
+      >
+        <th:block th:each="post,postStat : ${homePosts.items}">
+          <th:block th:replace="~{modules/post-card :: card(post = ${post}, index = ${postStat.index})}" />
+        </th:block>
+      </div>
+      <th:block
+        th:replace="~{modules/pagination :: pagination(context = '/page/', prevUrl = ${homePosts.prevUrl}, nextUrl = ${homePosts.nextUrl}, totalPages = ${homePosts.totalPages}, page = ${homePosts.page}, hasPrevious = ${homePosts.hasPrevious()}, hasNext = ${homePosts.hasNext()}, postListCount = ${homePosts.items.size()})}"
+      />
+    </th:block>
   </th:block>
 </html>

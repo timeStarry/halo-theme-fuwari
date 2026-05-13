@@ -4,6 +4,7 @@
   th:lang="${#locale.toLanguageTag}"
   class="bg-[var(--page-bg)] text-[14px] transition md:text-[16px]"
   th:fragment="html (title,hero,content,head,footer,sidebar,contentClass,pageType)"
+  th:with="homeConfig=${theme.config['home']}, baseConfig=${theme.config['base']}, bannerConfig=${homeConfig != null and homeConfig['banner'] != null ? homeConfig['banner'] : baseConfig['banner']}"
   data-overlayscrollbars-initialize
 >
   <head>
@@ -52,7 +53,7 @@
         const BANNER_HEIGHT_HOME = BANNER_HEIGHT + BANNER_HEIGHT_EXTEND;
         const PAGE_WIDTH = 75;
         const configHue = /*[[${theme.config.base.themeColor.hue}]]*/ 250;
-        const banner_position = /*[[${theme.config.base.banner.position}]]*/ "center";
+        const banner_position = /*[[${bannerConfig != null ? bannerConfig.position : 'center'}]]*/ "center";
         const bannerOffsetByPosition = {
           top: `${BANNER_HEIGHT_EXTEND}vh`,
           center: `${BANNER_HEIGHT_EXTEND / 2}vh`,
@@ -123,12 +124,12 @@
   <body
     class="min-h-screen transition"
     th:date-page-type="${pageType}"
-    th:classappend="|${pageType == 'home' ? 'is-home' : ''} ${theme.config.base.banner.enable ? ' enable-banner' : ''}|"
+    th:classappend="|${pageType == 'home' ? 'is-home' : ''} ${bannerConfig != null and bannerConfig.enable ? ' enable-banner' : ''}|"
     data-overlayscrollbars-initialize
   >
     <th:block th:replace="~{modules/config-carrier}" />
     <th:block th:replace="~{modules/top-row}" />
-    <th:block th:if="${theme.config.base.banner.enable}">
+    <th:block th:if="${bannerConfig != null and bannerConfig.enable}">
       <th:block th:replace="~{modules/banner-wrapper}" />
     </th:block>
     <div class="pointer-events-none absolute z-30 w-full" style="top: calc(35vh - 3.5rem)">
@@ -137,7 +138,10 @@
           id="main-grid"
           class="left-0 right-0 mx-auto grid w-full grid-cols-[17.5rem_auto] grid-rows-[auto_1fr_auto] gap-4 px-0 transition duration-700 md:px-4 lg:grid-rows-[auto]"
         >
-          <th:block th:if="${theme.config.base.banner.credit.enable}" th:replace="~{modules/widgets/banner-credit}" />
+          <th:block
+            th:if="${bannerConfig != null and bannerConfig.credit.enable}"
+            th:replace="~{modules/widgets/banner-credit}"
+          />
           <th:block th:replace="~{modules/sideBar}" />
 
           <main id="swup-container" class="transition-swup-fade col-span-2 overflow-hidden lg:col-span-1">
@@ -167,7 +171,7 @@
             <div
               id="toc-wrapper"
               class="absolute -right-[var(--toc-width)] top-0 hidden w-[var(--toc-width)] items-center transition lg:block"
-              th:classappend="|${theme.config.base.banner.enable ? 'toc-hide' : ''}|"
+              th:classappend="|${bannerConfig != null and bannerConfig.enable ? 'toc-hide' : ''}|"
             >
               <div
                 id="toc-inner-wrapper"

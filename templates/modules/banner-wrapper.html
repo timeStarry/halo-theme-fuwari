@@ -1,17 +1,97 @@
-<th:block th:fragment="banner-wrapper">
+<th:block
+  th:fragment="banner-wrapper"
+  th:with="homeConfig=${theme.config['home']}, baseConfig=${theme.config['base']}, profileConfig=${theme.config['profile']}, banner=${homeConfig != null and homeConfig['banner'] != null ? homeConfig['banner'] : baseConfig['banner']}, heroTitle=${homeConfig != null and not #strings.isEmpty(homeConfig['hero_title']) ? homeConfig['hero_title'] : site.title}, heroDescription=${homeConfig != null and not #strings.isEmpty(homeConfig['hero_description']) ? homeConfig['hero_description'] : profileConfig['bio']}, typewriter=${homeConfig != null ? homeConfig['typewriter'] : null}"
+>
   <div id="banner-wrapper" class="absolute z-10 w-full overflow-hidden transition duration-700" style="top: -30vh">
     <div id="banner" class="relative h-full overflow-hidden object-cover transition duration-700">
-      <div class="pointer-events-none absolute inset-0 bg-opacity-50 transition dark:bg-black/10"></div>
+      <div
+        class="to-[var(--page-bg)]/70 dark:to-[var(--page-bg)]/80 pointer-events-none absolute inset-0 bg-gradient-to-b from-white/10 via-transparent transition dark:from-black/20"
+      ></div>
+      <div
+        class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.38),transparent_40%)] opacity-70 transition dark:bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.12),transparent_38%)]"
+      ></div>
       <img
-        th:src="${theme.config.base.banner.src}"
+        th:src="${banner.src}"
         alt="Banner image of the blog"
-        th:style="|object-position: ${theme.config.base.banner.position}|"
+        th:style="|object-position: ${banner.position}|"
         width="1344"
         height="896"
         loading="lazy"
         decoding="async"
         class="h-full w-full object-cover"
       />
+    </div>
+
+    <div
+      th:if="${pageType == 'home' and param['preview-theme'] == null}"
+      id="home-hero"
+      class="pointer-events-none absolute inset-x-0 top-28 z-20 px-4"
+    >
+      <div class="mx-auto max-w-[var(--page-width)]">
+        <div class="lg:ml-[18.5rem]">
+          <div
+            class="home-hero-panel onload-animation pointer-events-auto relative overflow-hidden rounded-[calc(var(--radius-large)+0.5rem)] border border-white/55 bg-white/45 p-6 shadow-[0_20px_60px_rgba(255,255,255,0.18)] backdrop-blur-xl transition dark:border-white/10 dark:bg-black/25 dark:shadow-[0_20px_60px_rgba(0,0,0,0.2)] md:p-8"
+          >
+            <div
+              class="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.32),transparent_45%,rgba(255,255,255,0.12))] dark:bg-[linear-gradient(135deg,rgba(255,255,255,0.08),transparent_48%,rgba(255,255,255,0.02))]"
+            ></div>
+            <div class="relative">
+              <div class="mb-4 flex flex-wrap items-center gap-3">
+                <span
+                  class="inline-flex items-center rounded-full border border-white/60 bg-white/65 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-black/55 shadow-sm transition dark:border-white/10 dark:bg-white/10 dark:text-white/55"
+                >
+                  [[${site.title}]]
+                </span>
+                <button
+                  type="button"
+                  onclick="document.getElementById('home-post-list')?.scrollIntoView({ behavior: 'smooth', block: 'start' })"
+                  class="btn-regular h-9 rounded-full px-4 text-sm font-semibold shadow-sm active:scale-95"
+                >
+                  开始阅读
+                </button>
+              </div>
+
+              <h1
+                class="max-w-3xl text-4xl font-black leading-tight text-black/80 transition dark:text-white/85 md:text-5xl"
+                th:text="${heroTitle}"
+              ></h1>
+
+              <p
+                th:if="${not #strings.isEmpty(heroDescription)}"
+                class="mt-4 max-w-2xl text-sm leading-7 text-black/55 transition dark:text-white/55 md:text-base md:leading-8"
+                th:text="${heroDescription}"
+              ></p>
+
+              <div
+                th:if="${typewriter != null and typewriter.enable}"
+                class="mt-6 inline-flex max-w-full flex-wrap items-center gap-3 rounded-[calc(var(--radius-large)-0.15rem)] border border-white/55 bg-black/[0.03] px-4 py-3 shadow-sm transition dark:border-white/10 dark:bg-white/[0.05]"
+              >
+                <span
+                  th:if="${not #strings.isEmpty(typewriter.prefix)}"
+                  class="text-xs font-semibold uppercase tracking-[0.18em] text-black/40 transition dark:text-white/40"
+                  th:text="${typewriter.prefix}"
+                ></span>
+                <div
+                  class="flex min-w-0 items-center gap-1 text-sm font-semibold text-black/75 transition dark:text-white/75 md:text-base"
+                >
+                  <span
+                    id="home-typewriter"
+                    class="min-h-[1.75rem]"
+                    th:attr="data-type-speed=${typewriter.type_speed},data-back-speed=${typewriter.back_speed},data-pause-time=${typewriter.pause_time},data-loop=${typewriter.loop},data-fallback=${not #strings.isEmpty(heroDescription) ? heroDescription : heroTitle}"
+                  >
+                    <span
+                      class="home-typewriter-source hidden"
+                      th:each="line : ${typewriter.lines}"
+                      th:text="${line.text}"
+                    ></span>
+                  </span>
+                  <span class="home-typewriter-cursor" aria-hidden="true"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </th:block>

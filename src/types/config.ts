@@ -4,6 +4,7 @@ export interface ThemeConfig {
   post: Post;
   profile: Profile;
   base: Base;
+  home?: Home;
   style: Style;
 }
 
@@ -25,10 +26,18 @@ export interface Profile {
 
 export interface Base {
   menu: string;
-  banner: Banner;
+  banner?: Banner;
   toc: Toc;
   themeColor: ThemeColor;
   menu_names: any[];
+}
+
+export interface Home {
+  posts_per_page: number;
+  hero_title: string;
+  hero_description: string;
+  banner: Banner;
+  typewriter: Typewriter;
 }
 
 export interface Banner {
@@ -41,6 +50,7 @@ export interface Banner {
 export interface Credit {
   enable: boolean;
   text: string;
+  url?: string;
 }
 
 export interface Toc {
@@ -51,6 +61,20 @@ export interface Toc {
 export interface ThemeColor {
   hue: string;
   fixed: boolean;
+}
+
+export interface Typewriter {
+  enable: boolean;
+  prefix: string;
+  loop: boolean;
+  type_speed: number;
+  back_speed: number;
+  pause_time: number;
+  lines: TypewriterLine[];
+}
+
+export interface TypewriterLine {
+  text: string;
 }
 
 export type LIGHT_DARK_MODE = typeof LIGHT_MODE | typeof DARK_MODE | typeof AUTO_MODE;

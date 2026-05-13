@@ -15,24 +15,13 @@
           </div>
         </a>
         <div
-          class="hidden md:flex"
+          class="hidden items-center gap-1 md:flex"
           th:with="menu = ${not #strings.isEmpty(theme.config.base.menu) ? menuFinder.getByName(theme.config.base.menu) : menuFinder.getPrimary()}"
         >
           <th:block th:if="${menu != null} and ${not #lists.isEmpty(menu.menuItems)}">
-            <a
-              th:each="menuItem : ${menu.menuItems}"
-              th:href="@{${menuItem.status.href}}"
-              th:target="${menuItem.spec.target?.value}"
-              class="btn-plain scale-animation h-11 rounded-lg px-5 font-bold active:scale-95"
-            >
-              <div class="flex items-center">
-                [[${menuItem.status.displayName}]]
-                <span
-                  th:if="${menuItem.spec.target?.value == '_blank'}"
-                  class="icon-[tabler--external-link] ml-1 -translate-y-[1px] text-[1.3rem] text-black/[0.2] transition dark:text-white/[0.2]"
-                ></span>
-              </div>
-            </a>
+            <div class="menu-desktop-root">
+              <th:block th:replace="~{modules/menu-tree :: desktop-items(items = ${menu.menuItems}, level = ${0})}" />
+            </div>
           </th:block>
         </div>
         <div class="flex">
@@ -101,26 +90,9 @@
           class="float-panel float-panel-closed absolute right-4 px-2 py-2"
           th:with="menu = ${not #strings.isEmpty(theme.config.base.menu) ? menuFinder.getByName(theme.config.base.menu) : menuFinder.getPrimary()}"
         >
-          <a
-            th:each="menuItem : ${menu.menuItems}"
-            th:href="@{${menuItem.status.href}}"
-            th:target="${menuItem.spec.target?.value}"
-            class="group flex items-center justify-between gap-8 rounded-lg py-2 pl-3 pr-1 transition hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)]"
-          >
-            <div
-              class="font-bold text-black/75 transition group-hover:text-[var(--primary)] group-active:text-[var(--primary)] dark:text-white/75"
-            >
-              [[${menuItem.status.displayName}]]
-            </div>
-            <span
-              th:if="${menuItem.spec.target?.value == '_blank'}"
-              class="icon-[tabler--external-link] ml-1 -translate-y-[1px] text-[1.3rem] text-black/[0.2] transition dark:text-white/[0.2]"
-            ></span>
-            <span
-              th:unless="${menuItem.spec.target?.value == '_blank'}"
-              class="icon-[material-symbols--chevron-right-rounded] ml-1 -translate-y-[1px] text-[1.3rem] text-black/[0.2] transition dark:text-white/[0.2]"
-            ></span>
-          </a>
+          <th:block th:if="${menu != null} and ${not #lists.isEmpty(menu.menuItems)}">
+            <th:block th:replace="~{modules/menu-tree :: mobile-items(items = ${menu.menuItems}, level = ${0})}" />
+          </th:block>
         </div>
         <div
           id="display-setting"
